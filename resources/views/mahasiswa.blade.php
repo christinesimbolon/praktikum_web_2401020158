@@ -8,7 +8,51 @@
 <body>
     <h1>Data Mahasiswa</h1>
 
-    @if ($nim)
+    {{-- Pesan Feedback Operasi Berhasil/Gagal --}}
+    @if (session('berhasil'))
+        <p>{{ session('berhasil') }}</p>
+    @endif
+
+    @if (session('gagal'))
+        <p>{{ session('gagal') }}</p>
+    @endif
+
+    {{-- Menampilkan Daftar Error Validasi Server-Side --}}
+    @if ($errors->any())
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    @endif
+
+    {{-- Form Tambah Mahasiswa (Create) --}}
+    <h2>Tambah Mahasiswa</h2>
+    <form action="{{ route('mahasiswa.store') }}" method="POST">
+        @csrf
+        <p>NIM<br><input type="text" name="nim" value="{{ old('nim') }}"></p>
+        <p>Nama<br><input type="text" name="nama" value="{{ old('nama') }}"></p>
+        <p>Email<br><input type="email" name="email" value="{{ old('email') }}"></p>
+        <p>Usia<br><input type="number" name="usia" value="{{ old('usia') }}"></p>
+        <p>Program Studi<br>
+            <select name="program_studi_id">
+                <option value="">-- Pilih Program Studi --</option>
+                @foreach ($daftarProgramStudi as $programStudi)
+                    <option value="{{ $programStudi['id'] }}" @selected(old('program_studi_id') == $programStudi['id'])>
+                        {{ $programStudi['nama_prodi'] }}
+                    </option>
+                @endforeach
+            </select>
+        </p>
+        <button type="submit">Tambah Data</button>
+    </form>
+
+    <hr>
+
+    {{-- Bagian Tabel & Filter Data (Read) --}}
+    <h2>Daftar Mahasiswa</h2>
+
+    @if (isset($nim) && $nim)
         <p>Filter NIM: {{ $nim }}</p>
     @else
         <p>Menampilkan semua data.</p>
@@ -41,7 +85,7 @@
         </tbody>
     </table>
 
-    @if ($nim)
+    @if (isset($nim) && $nim)
         <p><a href="{{ url('/mahasiswa') }}">Tampilkan semua data</a></p>
     @endif
 </body>
